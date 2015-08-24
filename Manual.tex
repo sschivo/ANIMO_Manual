@@ -53,6 +53,9 @@
 \pgfdeclareimage[height=3ex]{ubuntu-logo}{images/ubuntu_logo}
 \pgfdeclareimage[height=2ex]{mac-command}{images/mac_command}
 \pgfdeclareimage[height=1.5ex]{contact-email}{images/email}
+\pgfdeclareimage[height=3ex]{copy-icon}{images/copy}
+
+\newcommand{\copysymbol}{\raisebox{-0.8ex}{\pgfuseimage{copy-icon}}}
 
 \newcommand{\winsymbol}{\raisebox{-0.8ex}{\pgfuseimage{win-logo}}}
 \newcommand{\macsymbol}{\raisebox{-0.5ex}{\pgfuseimage{mac-logo}}}
@@ -442,7 +445,7 @@ Figure~\ref{fig:rete-esempio} shows the resulting network and graph plot.
 \end{center}
 \caption{The completed example, where also the feature that allows to view the activity levels
 of reactants at chosen simulation times is demonstrated: the vertical red bar in the graph on the
-right can be moved through the slider under the graph, and indicates the point in the time series
+right can be moved using the slider under the graph, and indicates the point in the time series
 on which the colouring of the nodes in the \emph{Network} window is based.
 The legends for colours and shapes can be found in the \emph{Legend} panel.}\label{fig:rete-esempio}
 \end{minipage}
@@ -456,12 +459,14 @@ in which we identify a set of buttons, a plot of the activity levels of the sele
 The buttons above the graph have the following purposes:
 \begin{description}
   \item[Change title] allows to select a new title for the tab: this can be useful e.g. when comparing different
-simulations made on similar configurations of the same network
+simulations made on similar configurations of the same network.
   \item[Reset to here] restore the network to the state it was in when the simulation that gave the current graph was performed.
-If no simulation was done with the network in its current state, the current network configuration will be lost
+If no simulation was done with the network in its current state, the current network configuration will be lost.
   \item[Difference with\dots] allows to compute a difference between two simulations. After pressing this button, select another
 graph (i.e. another tab in the \emph{Results} panel) and click on the \emph{Difference with this} button: a new graph will be shown,
-highlighting the differences between the two selected graphs (first - second)
+highlighting the differences between the two selected graphs (first - second). The slider under the graph can be used
+to visualize the differences in node activity over the course of the simulation, using this color scale: red = ``the
+node is less active in the first simulation than in the second'', green = ``more active'', white = ``similar activity level''.
   \item[Save simulation data\dots] allows to save
 the simulation data of the current tab on a \emph{.sim} file, which can then be loaded and inspected in the future.
 The \emph{Load simulation data\dots} button in the \emph{Control Panel} above the \emph{Simulation} box can be used for this purpose.
@@ -479,21 +484,72 @@ obtained for example by exporting data from the default Excel format. If you wan
 that its maximum Y value coincides with the maximum in the plot, the data file needs to contain a column named (exactly)
 \emph{Number\_{}of\_{}levels}, on the first row of which the maximum of the scale for the \emph{.csv} data needs to be put. For example,
 if the data in the \emph{.csv} file are on a 0-100 scale, the value for \emph{Number\_{}of\_{}levels} will be 100.
-  \item \emph{Save as PNG}: save the graph as it is shown in a \emph{.png} image file. This file format can be opened by most
-image editors.
-  \item \emph{Export visible as CSV}: export to a \emph{.csv} file all the series that are currently visible (i.e., not hidden)
-in the graph.
+  \item \emph{Export}: this sub-menu contains options to export the currently visualized data
+    \begin{itemize}
+	\item \emph{Save as PNG}: save the graph as it is shown in a \emph{.png} image file. This file format can be opened by most
+      image editors.
+	\item \emph{Export visible as CSV}: export to a \emph{.csv} file all the series that are currently visible (i.e., not hidden)
+      in the graph.
+    \end{itemize}
+  \item \emph{Manage data series}: opens a new dialogue window (see Fig.~\ref{fig:manage-data-series})
+	that allows to manage the series plotted in the
+	graph, mostly with the same effect as the shortcuts explained in Subsection~\ref{subsec:animo-features}. The available features are:
+	  \begin{itemize}
+	    \item manually sort the data series (they are sorted alphabetically by default) by dragging and dropping them using the handles on the left
+	    \item choose whether to show or hide a data series by checking or unchecking the corresponding checkbox
+	    \item rename a series using the text box
+	    \item change the colour of a series choosing among the list of available colours
+	    \item change the way a series shows its error bars (when supported), using one of the available methods
+	    \item in case a series with error bars is to be displayed using dots (option ``Dots and bars'' for the error bar type),
+		  choose the shape of the dots among the ones available
+	  \end{itemize}
+	  All changes performed in this dialogue are immediately reflected in the graph.
+  \item \emph{Zoom}: this sub-menu contains commands to change the scale of the graph, managing its zoom level
+    \begin{itemize}
+	\item \emph{Graph interval}: change the lower and upper bounds for X and Y axes.
+	\item \emph{Zoom rectangle}: zoom the graph around a user-chosen rectangular area.
+	  After selecting this command the shape of the mouse cursor changes into a cross. The area of the plot to be
+	  zoomed can then be selected by dragging a rectangular selection around it (see the definition of \emph{rectangular
+	  selection} on page~\pageref{nota:rectangular-selection}).
+	\item \emph{Zoom extents}: bring the zoom level back to default, cancelling the effects of any \emph{Zoom rectangle}
+      command.
+    \end{itemize}
+  \item \emph{Graph type}: this sub-menu allows to change the type of the graph, using different ways to plot the data
+    \begin{itemize}
+	\item \emph{Step-shaped graph}: in order to display more faithfully data series with low granularity, this option
+	      can be chosen. It explicitly keeps each data series constant until the next point in which its value changes,
+	      thus producing a graph that contains many ``steps''.
+	\item \emph{Normal graph}: the default way to display data series from a simulation: plot the activities as lines
+	      using the X axis to represent simulation time and the Y axis to represent activity levels.
+	\item \emph{Heat-map graph}: alternative way to represent activity levels: use the activity scale as defined in the
+	      \emph{Legend} panel (the colours can be changed using Cytoscape's visual style options for node colour)
+	      to plot the activity levels against simulation time. Each data series occupies a fixed position on the Y axis, while
+	      the X axis is used to represent time.
+	      When 10 or more series are chosen to be plotted, this option is automatically selected.
+	\item \emph{X vs Y}: plot the values of one data series against another. A dialogue will open that allows to
+	      choose among the series currently present in the graph which one should be represent by X axis, and which
+	      by Y axis. When in this mode, the slider under the graph will move a dot on the graph instead of a vertical bar,
+	      as different time points have different coordinates both in X and Y.
+    \end{itemize}
   \item \emph{Clear Data}: clear the contents of the graph, removing all series. This can be useful for plotting
 a \emph{.csv} file without superposing it to the current graph, or for loading a file in which all hidden data where removed
 (exporting the visible graph to a \emph{.csv} with the previous command).
-  \item \emph{Graph interval}: change the lower and upper bounds for X and Y axes.
-  \item \emph{Zoom rectangle}: zoom the graph around a user-chosen rectangular area.
-    After selecting this command the shape of the mouse cursor changes into a cross. The area of the plot to be
-    zoomed can then be selected by dragging a rectangular selection around it (see the definition of \emph{rectangular
-    selection} on page~\pageref{nota:rectangular-selection}).
-  \item \emph{Zoom extents}: bring the zoom level back to default, cancelling the effects of any \emph{Zoom rectangle}
-command.
 \end{itemize}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{images/manage_data_series_dialog}
+\end{center}
+\caption{The \emph{Manage graph series} dialogue: reorder, hide/show, rename, change the colour and error-bar style
+of the series present in the graph. The option to change the way error bars are represented for a data series is present only if that
+data series has an associated standard deviation. This situation occurs when the data series represents the average of a number of simulations 
+(see the description of such tools in Subsection~\ref{subsec:animo-features}), or when the data series was loaded from a .csv file
+which contains error estimates (see instructions on how to prepare .csv files including error estimation data series in Subsection~\ref{subsec:animo-features}).
+The \emph{Change plotted series} button allows to select which nodes of the network
+are displayed in the graph: initially, only nodes marked as \emph{plotted} when a simulation is performed are included
+in the graph; with this button it is still possible to
+change the set of plotted nodes without the need to perform a new simulation.\label{fig:manage-data-series}}
+\end{figure}
 
 Whenever the result of one or more simulations is shown as a graph, it is possible to use the slider under the graph to
 move through the entire simulation, showing the activity levels of all reactants represented with different node colouring in
@@ -501,7 +557,7 @@ the \emph{Network} window on the left. For an example, see Figure~\ref{fig:rete-
 graph represents the time instant on which the colours of the nodes in the \emph{Network} window are based, and can
 be moved with the slider over which the mouse cursor is drawn.
 
-Finally, the \emph{Copy} button beside the slider can be used to set the activity levels in the network to the time point
+Finally, the \emph{Copy} button beside the slider (\copysymbol) can be used to set the activity levels in the network to the time point
 selected with the slider. This is useful if for example we want to change some conditions from a certain point in a simulation.
 
 
@@ -554,7 +610,7 @@ in the \emph{Control Panel}. Please refer to Cytoscape's manual to do that.
 % \end{figure}
 
 
-\subsection{ANIMO features}
+\subsection{ANIMO features}\label{subsec:animo-features}
 Nodes and edges (and groups of nodes/edges highlighted via a rectangular selection)
 can be disabled by choosing \emph{ANIMO} $\rightarrow$ \emph{Enable/disable} from
 the right-click menu: they will be represented with less saturated colours and can be re-enabled by performing
@@ -563,7 +619,16 @@ also possible to add/remove the node from the list of series appearing in the gr
 of the network by selecting \emph{Plotted} or \emph{Hidden} (see also Figure~\ref{fig:edit-reactant}):
 nodes that will be plotted have a blue border.
 Every enabled node will be taken into account when computing the evolution of the system,
-but only nodes marked as \emph{Plotted} will appear in a graph.
+but only nodes marked as \emph{Plotted} will appear in a graph. All edges connecting disabled nodes are automatically
+disabled.
+
+% It is possible to change the granularity of a group of nodes at the same time: once the nodes are selected,
+% right click on one of them and choose \emph{ANIMO} $\rightarrow$ \emph{Change number of levels} from the menu.
+% A dialog window will open, showing a slider that allows to select the new number of levels for all the selected nodes.
+% In a similar way, it is possible to ``rescale'' a group of edges with the right-click menu item \emph{ANIMO} $\rightarrow$
+% \emph{Rescale k value(s)}: see Subsection~\ref{subsec:param-settings} for details.
+% % it allows to automatically multiply the \emph{k} values of all the selected interactions
+% % by a given value. For example, to double the speed of a group of reactions, a scale value of \texttt{2} should be given.
 
 Each plot in an \emph{ANIMO Results} tab contains by default a legend, which can be used to modify which series are
 displayed and how they are displayed. Clicking with the central mouse button on a series name will hide it from the
@@ -593,7 +658,7 @@ with the associated error values.
 
 
 
-\subsection{Parameter settings}
+\subsection{Parameter settings}\label{subsec:param-settings}
 The application of some basic strategies when setting the parameters for a network allows
 the less experienced users to considerably shorten the modelling time.
 First of all, it is important to proceed in a \emph{top-to-bottom} order, trying to match
@@ -641,7 +706,7 @@ To check whether a new version of ANIMO has been published, run Cytoscape and op
 the app manager via the menu command \emph{Apps} $\rightarrow$ \emph{App Manager}.
 In the \emph{Check for Updates} tab the available updates will be listed:
 if a new version of ANIMO was published, it will appear in the table. Select it
-and press \emph{Updated Selected}, or just press \emph{Update All} to update all apps.
+and press \emph{Update Selected}, or just press \emph{Update All} to update all apps.
 Cytoscape will download and install the new versions of the apps.
 
 \subsection{ANIMO Options}\label{sec:animo-options}
@@ -652,7 +717,7 @@ ANIMO, where the following configuration settings can be changed:
   \item[location of the \emph{verifyta} executable]: the location of \emph{verifyta}
     can be changed if for example a wrong location was previously selected,
     UPPAAL was not already installed when ANIMO was run for the first time, or a new
-    version of UPPAAL was installed
+    version of UPPAAL has been installed
   \item[uncertainty in reaction parameters]: a degree of uncertainty can be set for the
     $k$ parameters of all the reactions in ANIMO models, introducing some non-determinism
     in the simulations. For example, if a value of 5\% uncertainty is chosen, a given reaction
